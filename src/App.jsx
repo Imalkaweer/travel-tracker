@@ -5,15 +5,30 @@ const initialItems = [
   { id: 1, description: "Passports", quantity: 2, packed: false },
   { id: 2, description: "Socks", quantity: 12, packed: false },
   { id: 3, description: "Pants", quantity: 10, packed: true },
-  { id: 4, description: "Power Bank", quantity: 1, packed: false },
+  { id: 4, description: "Power Bank", quantity: 2, packed: false },
+  { id: 5, description: "Jackets", quantity: 4, packed: false },
+  { id: 6, description: "Traveling Bags", quantity: 5, packed: false },
+  { id: 7, description: "Books", quantity: 5, packed: false },
+  { id: 8, description: "Watch", quantity: 2, packed: false },
+  { id: 9, description: "Air Tickets", quantity: 2, packed: false },
+  { id: 10, description: "Visa Documents", quantity: 2, packed: false },
+  { id: 11, description: "$$", quantity: 10000, packed: false },
 ];
 
 const App = () => {
+  const [items, setItems] = useState(initialItems);
+  function handleAddItems(item) {
+    setItems((items) => [...items, item]);
+  }
+
+  function handleDeleteItem(id) {
+    setItems((items) => items.filter((item) => item.id !== id));
+  }
   return (
     <div className="app">
       <Logo />
-      <Form />
-      <PackageList />
+      <Form onAddItems={handleAddItems} />
+      <PackageList items={items} onDeleteItem={handleDeleteItem} />
       <Stats />
     </div>
   );
@@ -22,7 +37,7 @@ const App = () => {
 function Logo() {
   return <h1>🏝️FAR AWAY 🧳</h1>;
 }
-function Form() {
+function Form({ onAddItems }) {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState(1);
 
@@ -30,9 +45,9 @@ function Form() {
     e.preventDefault();
     if (!description) return;
     const newItem = { description, quantity, packed: false, id: Date.now() };
-    console.log(newItem);
     setDescription("");
     setQuantity(1);
+    onAddItems(newItem);
   }
   return (
     <form className="add-form" onSubmit={handleSubmit}>
@@ -58,25 +73,25 @@ function Form() {
   );
 }
 
-function PackageList() {
+function PackageList({ items, onDeleteItem }) {
   return (
     <div className="list">
       <ul>
-        {initialItems.map((item) => (
-          <Item item={item} key={item.id} />
+        {items.map((item) => (
+          <Item item={item} onDeleteItem={onDeleteItem} key={item.id} />
         ))}
       </ul>
     </div>
   );
 }
 
-function Item({ item }) {
+function Item({ item, onDeleteItem }) {
   return (
     <li>
       <span style={item.packed ? { textDecoration: "line-through" } : {}}>
         {item.quantity} {item.description}
       </span>
-      <button>❌</button>
+      <button onClick={() => onDeleteItem(item.id)}>❌</button>
     </li>
   );
 }
